@@ -4,7 +4,11 @@ var cursor=null
 var tele=false
 var socket=io('', {transports: ['websocket']})
 socket.on('welcome', function (data) {
-    socket.emit('require', { uuid: document.cookie, ask: false })
+    if('clipboard' in navigator){
+        socket.emit('require', { uuid: document.cookie, ask: false })
+    }else{
+        socket.emit('require', { uuid: document.cookie, ask: true })
+    }
 })
 socket.on('data', function (data) {
     document.cookie=data.uuid
