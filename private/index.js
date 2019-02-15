@@ -4,14 +4,15 @@ var cursor=null
 var tele=false
 var socket=io('', {transports: ['websocket']})
 socket.on('welcome', function (data) {
+    var uuid=getUUID()
     if('clipboard' in navigator){
-        socket.emit('require', { uuid: document.cookie, ask: false })
+        socket.emit('require', { uuid: uuid, ask: false })
     }else{
-        socket.emit('require', { uuid: document.cookie, ask: true })
+        socket.emit('require', { uuid: uuid, ask: true })
     }
 })
 socket.on('data', function (data) {
-    document.cookie=data.uuid
+    setUUID(data.uuid)
     strarr=data.strarr
     $('#qrcode').empty()
     $('#qrcode').qrcode({
@@ -41,7 +42,7 @@ $(window).blur(function() {
 })
 $('#cover').hide()
 $('#qrcode').click(function(){
-    var uuid=document.cookie
+    var uuid=getUUID()
     var code=getURLStr(uuid)
     setText(code)
     shareText(code)
@@ -118,10 +119,24 @@ editor.on('blur',function(){
     editor.focus()
 })
 //***************************************************
+function getUUID(){
+    var nodes=document.cookie.split(';')
+    for(var i=0;i<nodes.length;i++){
+        var tokens=nodes[i].split('=')
+        if(tokens[0].trim()==='id'){
+            if(tokens.length<2){ return '' }
+            return tokens[1].trim()
+        }
+    }
+    return ''
+}
+function setUUID(str){
+    document.cookie='id='+str
+}
 function writeToClipOrChach(str){
     chach=''
     if(!('clipboard' in navigator)){ 
-        chach = str
+        chach=str
         return 
     }
     navigator.clipboard.writeText(str).catch(function(err){
@@ -129,7 +144,7 @@ function writeToClipOrChach(str){
     })
 }
 function shareText(str){
-    socket.emit('clipboard', { uuid: document.cookie, str: str, src: 'web', cursor: editor.getCursor()})
+    socket.emit('clipboard', { uuid: getUUID(), str: str, src: 'web', cursor: editor.getCursor()})
 }
 function setText(str){
     //$('#area').val(str)
@@ -142,5 +157,5 @@ function getText(){
 }
 function getURLStr(id){
     var path=window.location.href.split('?')[0]
-    return path + '?id=' + id
+    return path+'?id='+id
 }
