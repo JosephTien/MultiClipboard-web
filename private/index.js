@@ -47,6 +47,11 @@ $('#qrcode').click(function(){
     setText(code)
     shareText(code)
 })
+$('#copy').click(function(){
+    $('#bkup').val(getText())
+    $('#bkup').select()
+    document.execCommand('copy');
+})
 //***************************************************
 /*
 $area=$('#area')
