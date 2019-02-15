@@ -1,3 +1,26 @@
+function writeToClipOrChach(str){
+    chach=''
+    navigator.clipboard.writeText(str).catch(function(err){
+        chach=str
+    })
+}
+function shareText(str){
+    socket.emit('clipboard', { uuid: document.cookie, str: str, src: 'web', cursor: editor.getCursor()})
+}
+function setText(str){
+    //$('#area').val(str)
+    editor.setValue(str)
+    editor.setCursor(editor.lineCount(), 0)
+}
+function getText(){
+    //return $('#area').val(str)
+    return editor.getValue()
+}
+function getURLStr(id){
+    var path=window.location.href.split('?')[0]
+    return path + '?id=' + id
+}
+//***************************************************
 var chach=""
 var cursor=null
 var tele=false
@@ -41,7 +64,6 @@ $('#qrcode').click(function(){
     setText(code)
     shareText(code)
 })
-
 //***************************************************
 /*
 $area=$('#area')
@@ -113,28 +135,3 @@ editor.on('blur',function(){
     cursor=null
     editor.focus()
 })
-
-//***************************************************
-function writeToClipOrChach(str){
-    chach=''
-    navigator.clipboard.writeText(str).catch(function(err){
-        chach=str
-    })
-}
-
-function shareText(str){
-    socket.emit('clipboard', { uuid: document.cookie, str: str, src: 'web', cursor: editor.getCursor()})
-}
-function setText(str){
-    //$('#area').val(str)
-    editor.setValue(str)
-    editor.setCursor(editor.lineCount(), 0)
-}
-function getText(){
-    //return $('#area').val(str)
-    return editor.getValue()
-}
-function getURLStr(id){
-    var path=window.location.href.split('?')[0]
-    return path + '?id=' + id
-}
