@@ -1,0 +1,34 @@
+{
+  "name": "synclipboard",
+  "version": "1.0.0",
+  "description": "Sync Tool for MultiClipboard App",
+  "engines": {
+    "node": "11.x"
+  },
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jtien",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0",
+    "uuid": "^3.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JosephTien/synclipboard.git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express",
+    "sync",
+    "mutil",
+    "clipboard",
+    "app"
+  ]
+}

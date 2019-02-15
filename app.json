@@ -1,0 +1,8 @@
+{
+    "name": "synclipboard",
+    "description": "Sync Tool for MultiClipboard App",
+    "repository": "",
+    "logo": "",
+    "keywords": ["node", "express", "heroku", "sync", "multi", "clipboard", "app"],
+    "image": "heroku/nodejs"
+  }

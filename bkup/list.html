@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="JTien">
+    <title>MultiClipboard</title>
+    <style>
+        .main{
+            position: fixed;
+            z-index: 1;
+            top: 0px;
+            left: 11px; 
+            right: 150px; 
+            max-height: 100%;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+        .side{
+            width: 128px;
+            position: fixed;
+            z-index: 1;
+            top: 0px;
+            right: 0px;
+            overflow-x: hidden;
+            padding: 11px;
+            text-align: center;
+        }
+        .qrcode{
+            padding-top: 5px
+        }
+        .btnAdd-out{
+            width: 32px;
+            height: 32px;
+            text-align: center;
+            border-style: solid;
+            border-width: 2px;
+            border-radius: 32px;
+        }
+        .btnAdd-in{
+            border-style: none;
+            width:100%;
+            height:100%;
+            border-radius: 32px;
+            outline: none;
+        }
+
+        table, tr{
+            width: 100%;
+        }
+        td{
+            width: 100%;
+            text-align: center;
+            border-style: none;
+            border-radius: 5px;
+            padding-top: 11px;
+        }
+        textarea,textarea:focus {
+            resize: none;
+            outline: none;
+            width:100%;
+            padding: 10px;
+            box-sizing:border-box;
+            display:block;
+            max-width:100%;
+            line-height:1.5;
+            font: 16px Tahoma, cursive;
+            transition:box-shadow 0.5s ease;
+            box-shadow:0 4px 6px rgba(0,0,0,0.1);
+            font-smoothing:subpixel-antialiased;
+            border-radius:3px;
+        }
+
+    </style>
+    <body>
+        <div class="main">
+            <!--<div class="centered"><h2>App</h2><p>Uploaded</p></div>-->
+            <table id="table"></table>
+        </div>
+        <div class="side">
+            <div>Your ID</div>
+            <div id="qrcode" class="qrcode"></div>
+            <table>
+                <tr>
+                    <td>
+                        <div class="btnAdd-out">
+                            <button class="btnAdd-in" type="button" onclick="addNew()">✚</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btnAdd-out">
+                            <button class="btnAdd-in" type="button" onclick="deleteNew()">▬</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+        </div>
+    </body>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <script src="//rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
+    <script src="/jquery.qrcode.min.js"></script>
+    <script>
+        var strarr = []
+        //***************************************************
+        var socket = io('', {transports: ['websocket']});
+        socket.on('welcome', function (data) {
+            console.log(data);
+            socket.emit('require', { uuid: document.cookie });
+        });
+        socket.on('data', function (data) {
+            console.log(data);
+            document.cookie = data.uuid
+            strarr = data.strarr
+            $('#qrcode').empty();
+            $('#qrcode').qrcode({
+                text: data.uuid,
+                width : 128,
+                height: 128,
+            });
+            refreshTable()
+        });
+        //***************************************************
+        function newRow($table,cols){
+            $row = $('<tr/>');
+            for(i=0; i<cols.length; i++){
+                $col = $('<td/>').append(cols[i]);
+                $row.append($col);
+            }
+            $table.prepend($row);
+        }
+        //var sample = $('<input />', {'class' : 'form-control formInput', 'type': 'text'});
+        function warpText(str, n){
+            var area = $('<textarea/>', {rows: 1, n: n}).append(str)
+            area.attr('rows', area.val().split('\n').length)
+            area.bind('input propertychange', function() {
+                area.attr('rows', area.val().split('\n').length)
+                strarr[parseInt(area.attr('n'))] = area.val()
+                socket.emit('save', { uuid: document.cookie, n: area.attr('n'), str: area.val() });
+            });
+            autosize(area)
+            return area
+        }
+        function refreshTable(){
+            $table = $("#table")
+            $table.empty();
+            strarr.forEach(function(element, index) {
+                $textarea = [warpText(element, index)]
+                newRow($table, $textarea)
+            })
+        }
+        function addNew(){
+            strarr.push('')
+            refreshTable()
+            socket.emit('resize', { uuid: document.cookie, len: strarr.length});
+        }
+        function deleteNew(){
+            strarr.pop();
+            refreshTable()
+            socket.emit('resize', { uuid: document.cookie, len: strarr.length});
+        }
+    </script>
+</html>
