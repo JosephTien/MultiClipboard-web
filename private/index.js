@@ -52,6 +52,9 @@ $('#copy').click(function(){
     $('#bkup').select()
     document.execCommand('copy');
 })
+$('#renew').click(function(){
+    window.location = url_string.split('?')[0]+'?reset'
+})
 //***************************************************
 /*
 $area=$('#area')

@@ -33,7 +33,7 @@
 #qrcode{
     padding-top: 5px
 }
-#copy{
+#copy, #renew{
     width: 100%;
 }
 textarea,textarea:focus {
