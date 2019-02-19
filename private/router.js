@@ -5,6 +5,6 @@ if(params.get('reset')!=null){
     document.cookie = 'id='
     window.location = url_string.split('?')[0]
 }else if(params.get('id')!=null){
-    document.cookie = params.get("id")
+    document.cookie = 'id='+params.get("id")
     window.location = url_string.split('?')[0]
 }
